@@ -1,62 +1,50 @@
-import java.io.*;
-import java.net.*;
-
-class Server {
-    public static void main(String[] args)
-    {
-        ServerSocket server = null;
+/**
+ * This program demonstrates a simple TCP/IP socket server.
+ * The server accepts a single client at a time and the client sends messages to the server.
+ * The server prints the received messages and can be terminated.
+ * This is a single-threaded client-server communication (see program).
+ */
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+public class Server {
+    // initialization of socket and input stream
+    private Socket socket = null;
+    private ServerSocket serverSocket = null;
+    private DataInputStream in = null;
+    // implementation of constructor
+    public Server(int port) {
+        // start server and wait for a connection
         try {
-            // server is listening on port 2021
-            server = new ServerSocket(2021);
-            // running infinite loop accepting client request
-            while (true) {
-                // socket object to receive incoming client requests
-                Socket client = server.accept();
-                System.out.println("New client connected" + client.getInetAddress().getHostAddress());
-                // create a new thread object of Runnable
-                ClientHandler clientSock = new ClientHandler(client);
-                // This thread will handle the client separately
-                new Thread(clientSock).start();
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        // command "finally" is omitted
-    }
-    private static class ClientHandler implements Runnable {
-        private final Socket clientSocket;
-        // Constructor
-        public ClientHandler(Socket socket)
-        {
-            this.clientSocket = socket;
-        }
-        // the thread echoes client's messages
-        public void run()
-        {
-            PrintWriter out = null;
-            BufferedReader in = null;
-            try {
-                // get the outputstream of client
-                out = new PrintWriter(
-                        clientSocket.getOutputStream(), true);
-                // get the inputstream of client
-                in = new BufferedReader(
-                        new InputStreamReader(
-                                clientSocket.getInputStream()));
-                // writing the received message from client
-                String line;
-                while ((line = in.readLine()) != null) {
-                    System.out.printf(
-                            " Sent from the client: %s\n",
-                            line);
-                    out.println(line);
+            serverSocket = new ServerSocket(port);
+            System.out.println("Server started!");
+            System.out.println("Waiting for a client ......");
+            socket = serverSocket.accept();
+            System.out.println("Client accepted.");
+            // take input from the client socket
+            in = new DataInputStream(
+                    new BufferedInputStream(socket.getInputStream()));
+            // read msg from client till "Stop" is entered
+            String line = "";
+            while (!line.equals("Stop")) {
+                try {
+                    line = in.readUTF();
+                    System.out.println(line);
+                } catch (IOException e) {
+                    System.out.println(e);
                 }
             }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-            // command "finally" is omitted
+            // close connection
+            socket.close();
+            in.close();
+            System.out.println("Connection terminated.");
+        } catch (IOException e) {
+            System.out.println(e);
         }
+    }
+    public static void main(String args[]) {
+        Server serverSideTCP = new Server(2000);
     }
 }

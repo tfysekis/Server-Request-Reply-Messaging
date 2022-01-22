@@ -1,37 +1,49 @@
-import java.io.BufferedReader;
+/**
+ * This program demonstrates a simple TCP/IP socket client application that connects to a server
+ * to get some messages.
+ */
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
-
-public class Client{
-    public static void main(String[] args)
-    {
-        // establish a connection
-        try (Socket socket = new Socket("localhost", 2021)) {
-            // writing to server
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            // reading from server
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    socket.getInputStream()));
-            // object of scanner class
-            Scanner sc = new Scanner(System.in);
-            String line = null;
-            while (!"exit".equalsIgnoreCase(line)) {
-                // reading from user
-                line = sc.nextLine();
-                // sending the user input to server
-                out.println(line);
-                out.flush();
-                // displaying server reply
-                System.out.println("Server replied " + in.readLine());
-            }
-            // closing the scanner object
-            sc.close();
-        }
-        catch (IOException e) {
+import java.net.UnknownHostException;
+public class Client {
+    // initialization: socket, input & output streams
+    private Socket socket = null;
+    private DataInputStream input = null;
+    private DataOutputStream output = null;
+    // implementation of constructor
+    public Client(String address, Integer port) {
+        // do the connection
+        try {
+            socket = new Socket(address, port);
+            input = new DataInputStream(System.in);
+            // send output to the socket
+            output = new DataOutputStream(socket.getOutputStream());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        // read msg from input
+        String line = "";
+        while (!(line.equals("Stop"))) {
+            try {
+                line = input.readLine();
+                output.writeUTF(line);
+            } catch (IOException e) {
+                e.printStackTrace();}
+        }
+        // terminate the connection
+        try {
+            input.close();
+            output.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void main(String[] args) {
+        Client client = new Client("127.0.0.1", 2000);
     }
 }
