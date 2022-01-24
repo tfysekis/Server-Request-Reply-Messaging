@@ -1,4 +1,9 @@
 public class Message {
+    private String line;
+
+    public Message(String line){
+        this.line = line;
+    }
 
     public boolean isRead(){
 
@@ -16,7 +21,6 @@ public class Message {
     }
 
     public String body(){
-
-        return null;
+        return this.line;
     }
 }
