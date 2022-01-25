@@ -2,21 +2,21 @@ import java.util.List;
 
 public class Account {
     private String username;
-    private int port;
+    private int authToken;
     private Message message;
 
-    public Account(String username,int port,Message message) {
+    public Account(String username,int authToken) {
         this.username = username;
-        this.port = port;
-        this.message = message;
+        this.authToken = authToken;
+        //this.message = message;
     }
 
-    public String username(String username){
+    public String username(){
         return username;
     }
 
     public int authToken(){
-        return port;
+        return authToken;
     }
 
     public List<Message> messageBox(){
