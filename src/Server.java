@@ -20,7 +20,7 @@ public class Server {
     private ServerSocket serverSocket = null;
     private DataInputStream in = null;
     private DataOutputStream out = null;
-    private static int authToken = 145;
+    private static int authToken = 100;
     private static List<Account> accountList = new ArrayList<Account>();
     // implementation of constructor
     public Server(int port) {
@@ -38,41 +38,54 @@ public class Server {
                     new BufferedOutputStream(socket.getOutputStream()));
 
 
-            //first case
+            //get id
             int fn_id;
             fn_id = in.read();
             if (fn_id == 1){
                 try {
                     boolean flag = false;
-                    //changing token
-                    authToken++;
                     //reading the username
                     String username = in.readUTF();
                     //Checking if the user exists
                     for (Account value : accountList) {
                         if (username.equals(value.username())) {
                             System.out.println("Sorry, the user already exists");
+                            flag = true;
                             break;
                         }
                     }
-                    if (!(username.matches("[a-zA-Z]+")) && !(username.matches("_"))){
-                        flag = true;
-                    }
-                    if (flag){
-                        System.out.println("Invalid Username");
-                    }else{
-                        //creating the account
-                        Account account = new Account(username,authToken);
+                    if (!flag){
+                        for (int i = 0; i < username.length(); i++){
+                            char c = username.charAt(i);
+                            if (!(c >= 'A' && c <= 'Z') && !(c >= 'a' && c <= 'z')) {
+                                if (c != '_'){
+                                    flag = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (flag){
+                            System.out.println("Invalid Username");
+                        }else{
+                            //creating the account
+                            //changing token
+                            authToken++;
+                            int token = authToken;
+                            Account account = new Account(username,authToken);
+                            out.writeInt(token);
+                            System.out.println(token);
+                        }
                     }
 
                 } catch (IOException e) {
                     System.out.println(e);
                 }
-            }else if (fn_id == 2){
+            }/*else if (fn_id == 2){
                 int counter = 0;
+                out.write(accountList.size());
                 for (Account account : accountList) {
                     counter++;
-                    System.out.println(counter + "." + account.username());
+                    out.writeUTF(counter + ". " + account.username());
                 }
             }else if (fn_id == 3){
                 String line = in.readUTF();
@@ -91,6 +104,7 @@ public class Server {
             // close connection after sending one message
             socket.close();
             in.close();
+            //out.close();
             System.out.println("Connection terminated.");
         } catch (IOException e) {
             System.out.println(e);
