@@ -29,24 +29,22 @@ public class Client {
             e.printStackTrace();
         }
 
-        // sending username
-        output.write(Integer.parseInt(args[2]));
-        try {
-            output.writeUTF(args[3]);
-        } catch (IOException e) {
-            e.printStackTrace();}
-
-
-
-        //sending message
-        /*
-        try {
-            Message message = new Message(input.readLine());
-            output.writeUTF(message.body());
-        }catch (IOException e) {
-            e.printStackTrace();}
-         */
-        // terminate the connection after sending one message
+        int id = Integer.parseInt(args[2]);
+        // sending id
+        output.write(id);
+        //first case
+        if (id == 1){
+            try {
+                output.writeUTF(args[3]);
+            } catch (IOException e) {
+                e.printStackTrace();}
+        }else if (id == 2){
+            System.out.println("id is 2");
+        }else if (id == 3){
+            String line = args[4];
+            output.writeUTF(line);
+            //output.writeUTF(args[3]);
+        }
         try {
             input.close();
             output.close();

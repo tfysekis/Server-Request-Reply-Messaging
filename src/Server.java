@@ -6,21 +6,22 @@
  */
 import org.w3c.dom.ls.LSOutput;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.DoubleToIntFunction;
 
 public class Server {
     // initialization of socket and input stream
     private Socket socket = null;
     private ServerSocket serverSocket = null;
     private DataInputStream in = null;
+    private DataOutputStream out = null;
     private static int authToken = 145;
-    private static List<Account> accountList;
+    private static List<Account> accountList = new ArrayList<Account>();
     // implementation of constructor
     public Server(int port) {
         // start server and wait for a connection
@@ -33,29 +34,49 @@ public class Server {
             // take input from the client socket
             in = new DataInputStream(
                     new BufferedInputStream(socket.getInputStream()));
+            out = new DataOutputStream(
+                    new BufferedOutputStream(socket.getOutputStream()));
 
-            //changing the token
-            authToken++;
 
-            // read msg from client
-            int fn_id = in.read();
-            if(fn_id == 1){
+            //first case
+            int fn_id;
+            fn_id = in.read();
+            if (fn_id == 1){
                 try {
                     boolean flag = false;
+                    //changing token
+                    authToken++;
+                    //reading the username
                     String username = in.readUTF();
-                    if (accountList.isEmpty()){
-                        System.out.println("k");;
-                    }else{
-                        for (int i = 0; i < accountList.size(); i++){
-                            if (username.equals(accountList.get(i).username())){
-                                flag = true;
-                            }
+                    //Checking if the user exists
+                    for (Account value : accountList) {
+                        if (username.equals(value.username())) {
+                            System.out.println("Sorry, the user already exists");
+                            break;
                         }
+                    }
+                    if (!(username.matches("[a-zA-Z]+")) && !(username.matches("_"))){
+                        flag = true;
+                    }
+                    if (flag){
+                        System.out.println("Invalid Username");
+                    }else{
+                        //creating the account
+                        Account account = new Account(username,authToken);
                     }
 
                 } catch (IOException e) {
                     System.out.println(e);
                 }
+            }else if (fn_id == 2){
+                int counter = 0;
+                for (Account account : accountList) {
+                    counter++;
+                    System.out.println(counter + "." + account.username());
+                }
+            }else if (fn_id == 3){
+                String line = in.readUTF();
+                Message message = new Message(line);
             }
             /*
             try{
