@@ -1,14 +1,16 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Account {
     private String username;
     private int authToken;
-    private Message message;
+    private String line;
+    private List<Message> messageBox;
 
     public Account(String username,int authToken) {
         this.username = username;
         this.authToken = authToken;
-        //this.message = message;
+        this.messageBox = new ArrayList<>();
     }
 
     public String username(){
@@ -19,9 +21,16 @@ public class Account {
         return authToken;
     }
 
-    public List<Message> messageBox(){
-        messageBox().add(message);
-        return messageBox();
+    public List<Message> getMessageBox() {
+        return messageBox;
+    }
+
+    public void setMessageBox(List<Message> messageBox) {
+        this.messageBox = messageBox;
+    }
+
+    public void addMessageBox(Message message){
+        messageBox.add(message);
     }
 
 
