@@ -4,6 +4,7 @@
  * The server prints the received messages and can be terminated.
  * This is a single-threaded client-server communication (see program).
  */
+import jdk.swing.interop.SwingInterOpUtils;
 import org.w3c.dom.ls.LSOutput;
 
 import javax.management.remote.JMXServerErrorException;
@@ -30,15 +31,15 @@ public class Server {
         // start server and wait for a connection
         try {
             serverSocket = new ServerSocket(port);
-            System.out.println("Server started!");
-            System.out.println("Waiting for a client ......");
+            //System.out.println("Server started!");
+            //System.out.println("Waiting for a client ......");
 
             // take input from the client socket
 
             try {
                 while (true) {
                     socket = serverSocket.accept();
-                    System.out.println("Client accepted.");
+                    //System.out.println("Client accepted.");
                     in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                     out = new DataOutputStream(socket.getOutputStream());
                     int fn_id;
@@ -105,7 +106,7 @@ public class Server {
             socket.close();
             in.close();
             //out.close();
-            System.out.println("Connection terminated.");
+            //System.out.println("Connection terminated.");
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -118,8 +119,8 @@ public class Server {
         boolean exists = false;
         int posI = 0, posJ = 0;
         for (int i = 0; i < accountList.size(); i++){
-            for (int j = 0; j < accountList.get(i).getMessageBox().size(); i++){
-                if (messageID == accountList.get(i).getMessageBox().get(j).getId()){
+            for (int j = 0; j < accountList.get(i).getMessageBox().size(); j++){
+                if (messageID == accountList.get(i).getMessageBox().get(j).getId()) {
                     exists = true;
                     posI = i;
                     posJ = j;
@@ -131,7 +132,7 @@ public class Server {
             //removing message
             accountList.get(posI).getMessageBox().remove(posJ);
             out.writeUTF("OK");
-        }else {
+        }else{
             out.writeUTF("Message does not exist");
         }
 
@@ -180,22 +181,16 @@ public class Server {
             }
         }
         out.writeBoolean(flag);
-        System.out.println(flag);
-        if (flag){
+        if (!flag){
             int sizeOfMessageBox = accountList.get(pos).getMessageBox().size();
-            System.out.println(accountList.get(pos).getMessageBox());
             out.write(sizeOfMessageBox);
             for (int i = 0; i < sizeOfMessageBox; i++){
                 boolean isRead = accountList.get(pos).getMessageBox().get(i).isRead();
                 String sender = accountList.get(pos).getMessageBox().get(i).getSender();
                 int idMessage = accountList.get(pos).getMessageBox().get(i).getId();
                 if (isRead){
-                    System.out.println(idMessage + "no");
-                    System.out.println(sender + "no");
                     out.writeUTF(idMessage + "." + " from: " + sender);
                 }else{
-                    System.out.println(idMessage);
-                    System.out.println(sender);
                     out.writeUTF(idMessage + "." + " from: " + sender + "*");
                 }
             }

@@ -66,9 +66,8 @@ public class Client {
             if(input.readBoolean()){
                 //inbox empty
                 boolean inbox = input.readBoolean();
-                if (inbox){
+                if (!inbox){
                     int sizeOfMessageBox = input.read();
-                    System.out.println(sizeOfMessageBox + " sizeofbox");
                     for (int i = 0; i < sizeOfMessageBox; i++){
                         //print inbox
                         System.out.println(input.readUTF());
@@ -82,7 +81,7 @@ public class Client {
                 System.out.println(input.readUTF());
             }
         }else if (id == 5){
-            output.write(Integer.parseInt(args[2]));
+            output.write(Integer.parseInt(args[3]));
             //check valid token
             if (input.readBoolean()){
                 //sending message id
