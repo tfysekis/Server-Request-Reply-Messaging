@@ -2,19 +2,13 @@
  * This program demonstrates a simple TCP/IP socket server.
  * The server accepts a single client at a time and the client sends messages to the server.
  * The server prints the received messages and can be terminated.
- * This is a single-threaded client-server communication (see program).
  */
-import jdk.swing.interop.SwingInterOpUtils;
-import org.w3c.dom.ls.LSOutput;
 
-import javax.management.remote.JMXServerErrorException;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.function.DoubleToIntFunction;
 
 public class Server {
     // initialization of socket and input stream
@@ -22,7 +16,7 @@ public class Server {
     private ServerSocket serverSocket = null;
     private DataInputStream in = null;
     private DataOutputStream out = null;
-    private static int authToken = 100;
+    private static int uniqueToken = 100;
     private static List<Account> accountList = new ArrayList<Account>();
     private static int counter_id = 0;
     // implementation of constructor
@@ -39,7 +33,7 @@ public class Server {
             try {
                 while (true) {
                     socket = serverSocket.accept();
-                    //System.out.println("Client accepted.");
+                    System.out.println("Client accepted.");
                     in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                     out = new DataOutputStream(socket.getOutputStream());
                     int fn_id;
@@ -53,7 +47,7 @@ public class Server {
                         if(validToken(token)){
                             showAccounts(in,out,accountList);
                         }else{
-                            out.writeUTF("Invalid Auth Token");
+                            out.writeUTF("Invalid Token");
                         }
                     }else if (fn_id == 3){
                         //java client localhost 5000 3 1024 tester “HELLO WORLD”
@@ -64,7 +58,7 @@ public class Server {
                         if(validToken(token)){
                             sendMessage(in,out,accountList,token);
                         }else{
-                            out.writeUTF("Invalid Auth Token");
+                            out.writeUTF("Invalid Token");
                         }
                     }else if (fn_id == 4){
                         //java client <ip> <port number> 4 <authToken>
@@ -74,7 +68,7 @@ public class Server {
                         if (valid){
                             showInbox(in,out,accountList,token);
                         }else{
-                            out.writeUTF("Invalid Auth Token");
+                            out.writeUTF("Invalid Token");
                         }
                     }else if (fn_id == 5){
                         //java client <ip> <port number> 5 <authToken> <message_id>
@@ -84,7 +78,7 @@ public class Server {
                         if (valid){
                             readMessage(in,out,accountList,token);
                         }else{
-                            out.writeUTF("Invalid Auth Token");
+                            out.writeUTF("Invalid Token");
                         }
                     }else if (fn_id == 6){
                         //java client <ip> <port number> 6 <authToken> <message_id>
@@ -94,15 +88,13 @@ public class Server {
                         if (valid){
                             deleteMessage(in,out,accountList,token);
                         }else{
-                            out.writeUTF("Invalid Auth Token");
+                            out.writeUTF("Invalid Token");
                         }
                     }
                 }
             }catch (IOException e){
                 e.printStackTrace();
             }
-
-            // close connection after sending one message
             socket.close();
             in.close();
             //out.close();
@@ -237,9 +229,9 @@ public class Server {
                 }else{
                     //creating the account
                     //generate token
-                    authToken++;
-                    String token = String.valueOf(authToken);
-                    Account account = new Account(username, authToken);
+                    uniqueToken++;
+                    String token = String.valueOf(uniqueToken);
+                    Account account = new Account(username, uniqueToken);
                     out.writeUTF(token);
                     accountList.add(account);
                 }
