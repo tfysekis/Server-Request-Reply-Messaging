@@ -1,15 +1,55 @@
-# ﻿This program demonstrates a multi TCP/IP socket server.
+# Server Request-Reply Messaging
 
-The server is running all the time waiting for clients,every client who has the port number can connect to the server.
+This program demonstrates a multi TCP/IP socket server.
 
-More details,
+## Prerequisites
 
-   After running the Server, every client has his unique token that he can use for services.With the code 1 he can have access,with the code 2 he can see the the list with the accounts.
-   ### ![Screenshot from 2022-01-31 22-47-28](https://user-images.githubusercontent.com/72731525/151871865-ccad0a7d-c839-4aeb-b047-5105c29fda16.png)
+Make sure that you have Java installed on your machine, and that you're using javac version 11.0.18 or later.
+
+## Running the Program
+
+To run the program, follow these steps:
+
+1. Open two terminals.
+2. In the first terminal, navigate to the src directory and compile Server.java using the following command:
+```
+javac Server.java  
+```
+3. In the second terminal, navigate to the src directory and compile Client.java using the following command:
+```
+javac Client.java
+```
+4. Select a portal number to use when compiling,here is an example
+```
+java Server 3000
+```
 
 
+5. Once the server is running, clients can connect to it using the assigned port number.
 
 
-There are more options like 3: send message to user – 4: show inbox – 5: read message – 6: delete message.
+Here is an example of how it should look like:
 
-Go ahead and try some,
+
+![Alt text](MarkDown/example1.png)
+
+
+## Usage
+
+After running the server, each client is assigned a unique token that can be used to access services. The following options are available:
+
+- Code 1: Access service
+- Code 2: View account list
+- Code 3: Send message to user
+- Code 4: Show inbox
+- Code 5: Read message
+- Code 6: Delete message
+
+Here is an example of using codes 2, 3, and 4:
+
+![Alt text](MarkDown/example2.png)
+
+
+As you can see, with the wrong token/key (101), it shows "Inbox is empty". Here is another example of reading a message (code 5) with the correct token/key:
+
+![Alt text](MarkDown/example3.png)
